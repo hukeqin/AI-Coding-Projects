@@ -1,0 +1,928 @@
+/* 角色选单区域样式 */
+
+.characters-section {
+    background: var(--bg-secondary);
+    position: relative;
+    overflow: hidden;
+    padding: 3rem 0;
+    min-height: 100vh; /* 确保板块高度固定，为角色子菜单预留空间 */
+    transition: all 0.8s ease;
+}
+
+/* 角色选单背景图片 */
+.characters-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/character/wallpaper/jtw.png'); /* 默认狡兔屋背景 */
+    background-size: contain;
+    background-position: center 75%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.7;
+    z-index: 0;
+    transition: opacity 0.8s ease, background-image 0.8s ease, background-size 0.8s ease, background-position 0.8s ease;
+    animation: slowZoom 20s ease-in-out infinite alternate;
+}
+
+/* 角色选单遮罩层 */
+.characters-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 212, 255, 0.05) 0%,
+        rgba(26, 26, 26, 0.4) 40%,
+        rgba(10, 10, 10, 0.6) 70%,
+        rgba(0, 0, 0, 0.75) 100%
+    );
+    backdrop-filter: blur(0.3px);
+    z-index: 1;
+    transition: all 0.8s ease;
+}
+
+/* 确保内容在背景之上 */
+.characters-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* 阵营转盘容器 */
+.faction-carousel-container {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    height: 80vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 阵营转盘 */
+.faction-carousel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 50vh 0; /* 上下添加足够的padding让第一个和最后一个项目都能居中 */
+    scroll-behavior: smooth;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    scroll-snap-type: y mandatory;
+    box-sizing: border-box;
+}
+
+.faction-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+/* 阵营项目 */
+.faction-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 16px;
+    background: transparent;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    width: 120px;
+    position: relative;
+    overflow: hidden;
+    transform: scale(0.8);
+    opacity: 0.6;
+    filter: grayscale(70%) brightness(0.4);
+    scroll-snap-align: center;
+}
+
+.faction-item:hover {
+    transform: scale(0.8);
+    opacity: 0.7;
+    filter: grayscale(50%) brightness(0.6);
+}
+
+.faction-item.active {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: 0 25px 60px rgba(0, 212, 255, 0.4);
+    transform: scale(1.2);
+    opacity: 1;
+    filter: grayscale(0%) brightness(1);
+    z-index: 10;
+}
+
+.faction-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(0, 212, 255, 0.3), 
+        transparent);
+    transition: left 0.6s ease;
+}
+
+.faction-item.active::before {
+    left: 100%;
+}
+
+/* 未选中阵营的遮罩效果 */
+.faction-item:not(.active)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    transition: all 0.5s ease;
+    z-index: 1;
+    pointer-events: none; /* 让遮罩不阻挡点击事件 */
+}
+
+/* 阵营Logo */
+.faction-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: all 0.5s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.faction-item.active .faction-logo {
+    width: 100px;
+    height: 100px;
+    border-color: transparent;
+    border-width: 4px;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+}
+
+.faction-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.faction-item:hover .faction-logo img {
+    transform: scale(1.05);
+}
+
+.faction-item.active .faction-logo img {
+    transform: scale(1.1);
+}
+
+/* 阵营名称 */
+.faction-name {
+    color: var(--text-light);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.5s ease;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    line-height: 1;
+}
+
+.faction-item.active .faction-name {
+    color: var(--primary-blue);
+    font-size: 0.8rem;
+    text-shadow: 0 0 15px rgba(0, 212, 255, 0.8), 
+                 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 1px;
+}
+
+/* 转盘导航按钮 */
+.carousel-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(26, 26, 26, 0.3);
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+}
+
+.carousel-nav:hover {
+    background: rgba(0, 212, 255, 0.3);
+    color: var(--text-white);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+    transform: translateX(-50%) scale(1.1);
+}
+
+.carousel-prev {
+    top: -25px;
+}
+
+.carousel-next {
+    bottom: -25px;
+}
+
+/* 响应式箭头显示 */
+.mobile-arrow {
+    display: none;
+}
+
+.desktop-arrow {
+    display: inline;
+}
+
+/* 角色预览区域 */
+.characters-preview {
+    position: fixed;
+    bottom: 25vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100vw - 300px); /* 减去左侧转盘宽度 */
+    max-width: 1200px;
+    padding: 0 2rem;
+    z-index: 50;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 阵营角色组 */
+.faction-characters {
+    display: block; /* 始终显示，通过透明度控制可见性 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none; /* 隐藏时不响应鼠标事件 */
+}
+
+.faction-characters.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto; /* 显示时响应鼠标事件 */
+}
+
+/* 阵营标题 */
+.faction-title {
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    text-shadow: 0 0 15px rgba(0, 212, 255, 0.8), 
+                 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.faction-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+/* 角色行布局 */
+.characters-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 1rem 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.characters-row::-webkit-scrollbar {
+    display: none;
+}
+
+/* 角色头像项目 */
+.character-avatar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: transparent;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.character-avatar-item:hover {
+    border-color: var(--border-glow);
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.2);
+}
+
+.character-avatar-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 107, 53, 0.1), 
+        transparent);
+    transition: left 0.5s ease;
+}
+
+.character-avatar-item:hover::before {
+    left: 100%;
+}
+
+/* 角色头像图片 */
+.character-avatar-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.character-avatar-item:hover img {
+    transform: scale(1.1);
+    border-color: transparent;
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+}
+
+/* 角色标签 */
+.character-label {
+    color: var(--text-light);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    transition: color 0.3s ease;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+}
+
+.character-avatar-item:hover .character-label {
+    color: var(--accent-orange);
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+/* 选中状态样式 */
+.character-avatar-item.selected {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: 0 20px 50px rgba(255, 23, 68, 0.3);
+    transform: scale(1.05);
+}
+
+.character-avatar-item.selected img {
+    border-color: transparent;
+    box-shadow: 0 0 25px rgba(255, 23, 68, 0.6);
+}
+
+.character-avatar-item.selected .character-label {
+    color: var(--accent-pink);
+    text-shadow: 0 0 15px rgba(255, 23, 68, 0.8);
+    font-weight: 700;
+}
+
+
+
+/* 角色卡片进入动画 */
+.faction-item {
+    animation: slideInLeft 0.6s ease both;
+}
+
+.faction-item:nth-child(1) { animation-delay: 0.1s; }
+.faction-item:nth-child(2) { animation-delay: 0.2s; }
+.faction-item:nth-child(3) { animation-delay: 0.3s; }
+.faction-item:nth-child(4) { animation-delay: 0.4s; }
+.faction-item:nth-child(5) { animation-delay: 0.5s; }
+.faction-item:nth-child(6) { animation-delay: 0.6s; }
+
+.character-avatar-item {
+    animation: fadeInUp 0.6s ease both;
+}
+
+.character-avatar-item:nth-child(1) { animation-delay: 0.2s; }
+.character-avatar-item:nth-child(2) { animation-delay: 0.3s; }
+.character-avatar-item:nth-child(3) { animation-delay: 0.4s; }
+.character-avatar-item:nth-child(4) { animation-delay: 0.5s; }
+.character-avatar-item:nth-child(5) { animation-delay: 0.6s; }
+.character-avatar-item:nth-child(6) { animation-delay: 0.7s; }
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    /* 移动端重新启用背景图片 */
+    .characters-section::before {
+        background-attachment: scroll;
+        background-size: contain;
+        background-position: center bottom;
+        background-repeat: no-repeat;
+        animation: none;
+        opacity: 0.8;
+        /* 让背景图片底边略高于板块底边 */
+        bottom: 20px;
+        height: calc(100% - 20px);
+        transition: all 0.8s ease;
+    }
+    
+    /* 移动端遮罩层调整 */
+    .characters-section::after {
+        background: radial-gradient(
+            ellipse at center,
+            rgba(0, 212, 255, 0.01) 0%,
+            rgba(26, 26, 26, 0.15) 40%,
+            rgba(10, 10, 10, 0.25) 70%,
+            rgba(0, 0, 0, 0.35) 100%
+        );
+        opacity: 0.8;
+        transition: all 0.8s ease;
+    }
+    
+    .characters-section {
+        background: var(--bg-secondary);
+        padding: 2rem 0;
+        min-height: auto;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .characters-section .section-title {
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+    }
+    
+    .characters-section .section-subtitle {
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+    
+    .faction-carousel-container {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: 100%;
+        height: 120px;
+        margin-bottom: 2rem;
+        z-index: 10;
+        opacity: 0.85;
+        visibility: visible;
+        background: rgba(26, 26, 26, 0.2);
+        border-radius: 12px;
+        padding: 0.5rem 0;
+        backdrop-filter: blur(5px);
+    }
+    
+    .faction-carousel {
+        flex-direction: row;
+        padding: 0 1rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        height: 100%;
+        gap: 1rem;
+        justify-content: flex-start;
+    }
+    
+    .characters-preview {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        width: 100%;
+        max-width: none;
+        padding: 0 1rem;
+        opacity: 0.9;
+        visibility: visible;
+        margin-bottom: 3rem;
+    }
+    
+    /* 移动端阵营角色组布局 */
+    .faction-characters {
+        position: relative;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        display: none;
+    }
+    
+    .faction-characters.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        display: block;
+    }
+    
+    .faction-item {
+        width: 100px;
+        padding: 0.5rem;
+        transform: scale(0.85);
+        opacity: 0.6;
+        filter: grayscale(50%);
+        flex-shrink: 0;
+        background: rgba(42, 42, 42, 0.3);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 212, 255, 0.15);
+        backdrop-filter: blur(3px);
+        transition: all 0.3s ease;
+    }
+    
+    .faction-item:hover {
+        opacity: 0.75;
+        transform: scale(0.9);
+        background: rgba(42, 42, 42, 0.4);
+    }
+    
+    .faction-item.active {
+        transform: scale(1);
+        opacity: 0.9;
+        filter: grayscale(0%);
+        background: rgba(42, 42, 42, 0.6);
+        border-color: rgba(0, 212, 255, 0.6);
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+    }
+    
+    /* 移动端移除遮罩效果 */
+    .faction-item:not(.active)::after {
+        display: none;
+    }
+    
+    .faction-logo {
+        width: 60px;
+        height: 60px;
+        border: 2px solid rgba(0, 212, 255, 0.3);
+    }
+    
+    .faction-item.active .faction-logo {
+        width: 70px;
+        height: 70px;
+        border: 2px solid var(--primary-blue);
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+    }
+    
+    .faction-name {
+        font-size: 0.65rem;
+        color: var(--text-light);
+        margin-top: 0.3rem;
+    }
+    
+    .faction-item.active .faction-name {
+        font-size: 0.75rem;
+        color: var(--primary-blue);
+        text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+    }
+    
+    .characters-row {
+        gap: 1rem;
+        padding: 1rem 0;
+        justify-content: flex-start;
+    }
+    
+    .character-avatar-item {
+        min-width: 80px;
+        padding: 0.5rem;
+        background: rgba(26, 26, 26, 0.3);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 212, 255, 0.08);
+        backdrop-filter: blur(2px);
+        transition: all 0.3s ease;
+    }
+    
+    .character-avatar-item:hover {
+        background: rgba(26, 26, 26, 0.4);
+        border-color: rgba(0, 212, 255, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .character-avatar-item img {
+        width: 55px;
+        height: 55px;
+        border: 2px solid rgba(0, 212, 255, 0.3);
+    }
+    
+    .character-avatar-item:hover img {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+    }
+    
+    .character-label {
+        font-size: 0.6rem;
+        color: var(--text-light);
+        margin-top: 0.3rem;
+    }
+    
+    .faction-title {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+        text-align: center;
+        color: var(--primary-blue);
+        opacity: 0.9;
+        text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+    }
+    
+    .carousel-nav {
+        display: none;
+    }
+    
+    /* 移动端显示水平箭头 */
+    .mobile-arrow {
+        display: inline;
+    }
+    
+    .desktop-arrow {
+        display: none;
+    }
+    
+
+}
+
+@media (max-width: 480px) {
+    .characters-section {
+        padding: 1.5rem 0;
+        min-height: auto;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* 小屏幕背景图片调整 */
+    .characters-section::before {
+        background-attachment: scroll;
+        background-size: contain;
+        background-position: center bottom;
+        background-repeat: no-repeat;
+        animation: none;
+        opacity: 0.75;
+        bottom: 15px;
+        height: calc(100% - 15px);
+        transition: all 0.8s ease;
+    }
+    
+    .characters-section::after {
+        background: radial-gradient(
+            ellipse at center,
+            rgba(0, 212, 255, 0.01) 0%,
+            rgba(26, 26, 26, 0.15) 40%,
+            rgba(10, 10, 10, 0.25) 70%,
+            rgba(0, 0, 0, 0.35) 100%
+        );
+        opacity: 0.8;
+        transition: all 0.8s ease;
+    }
+    
+    .characters-section .section-title {
+        margin-bottom: 1rem;
+        font-size: 1.8rem;
+    }
+    
+    .characters-section .section-subtitle {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    
+    .faction-carousel-container {
+        height: 100px;
+        margin-bottom: 1.5rem;
+        opacity: 0.8;
+        background: rgba(26, 26, 26, 0.15);
+        border-radius: 10px;
+        padding: 0.4rem 0;
+        backdrop-filter: blur(4px);
+    }
+    
+    .faction-carousel {
+        gap: 0.8rem;
+        padding: 0 0.5rem;
+    }
+    
+    .characters-preview {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        width: 100%;
+        max-width: none;
+        padding: 0 0.5rem;
+        opacity: 0.85;
+        visibility: visible;
+        margin-bottom: 2rem;
+    }
+    
+    /* 移动端阵营角色组布局 */
+    .faction-characters {
+        position: relative;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        display: none;
+    }
+    
+    .faction-characters.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        display: block;
+    }
+    
+    .faction-item {
+        width: 75px;
+        padding: 0.4rem;
+        transform: scale(0.8);
+        opacity: 0.5;
+        filter: grayscale(60%);
+        flex-shrink: 0;
+        background: rgba(42, 42, 42, 0.2);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 212, 255, 0.1);
+        backdrop-filter: blur(2px);
+        transition: all 0.3s ease;
+    }
+    
+    .faction-item:hover {
+        opacity: 0.65;
+        transform: scale(0.85);
+        background: rgba(42, 42, 42, 0.3);
+    }
+    
+    .faction-item.active {
+        transform: scale(0.95);
+        opacity: 0.8;
+        filter: grayscale(0%);
+        background: rgba(42, 42, 42, 0.4);
+        border-color: rgba(0, 212, 255, 0.4);
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+    }
+    
+    .faction-logo {
+        width: 45px;
+        height: 45px;
+        border: 2px solid rgba(0, 212, 255, 0.3);
+    }
+    
+    .faction-item.active .faction-logo {
+        width: 55px;
+        height: 55px;
+        border: 2px solid var(--primary-blue);
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
+    }
+    
+    .faction-name {
+        font-size: 0.55rem;
+        color: var(--text-light);
+        margin-top: 0.2rem;
+    }
+    
+    .faction-item.active .faction-name {
+        font-size: 0.65rem;
+        color: var(--primary-blue);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+    }
+    
+    /* 移动端移除遮罩效果 */
+    .faction-item:not(.active)::after {
+        display: none;
+    }
+    
+    .characters-row {
+        gap: 0.8rem;
+        justify-content: flex-start;
+        padding: 0.8rem 0;
+    }
+    
+    .character-avatar-item {
+        min-width: 65px;
+        padding: 0.4rem;
+        background: rgba(26, 26, 26, 0.25);
+        border-radius: 6px;
+        border: 1px solid rgba(0, 212, 255, 0.06);
+        backdrop-filter: blur(1px);
+        transition: all 0.3s ease;
+    }
+    
+    .character-avatar-item:hover {
+        background: rgba(26, 26, 26, 0.35);
+        border-color: rgba(0, 212, 255, 0.12);
+        transform: translateY(-1px);
+    }
+    
+    .character-avatar-item img {
+        width: 45px;
+        height: 45px;
+        border: 2px solid rgba(0, 212, 255, 0.3);
+    }
+    
+    .character-avatar-item:hover img {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+    }
+    
+    .character-label {
+        font-size: 0.55rem;
+        color: var(--text-light);
+        margin-top: 0.2rem;
+    }
+    
+    .faction-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.6rem;
+        text-align: center;
+        color: var(--primary-blue);
+        opacity: 0.9;
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+    }
+    
+    .carousel-nav {
+        display: none;
+    }
+    
+    /* 小屏幕也显示水平箭头 */
+    .mobile-arrow {
+        display: inline;
+    }
+    
+    .desktop-arrow {
+        display: none;
+    }
+} 
